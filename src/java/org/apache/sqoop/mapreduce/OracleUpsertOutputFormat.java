@@ -22,10 +22,13 @@ import java.io.IOException;
 import java.sql.SQLException;
 import java.util.LinkedHashSet;
 import java.util.Set;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.sqoop.manager.AlpineUtility;
+
 import com.cloudera.sqoop.lib.SqoopRecord;
 import com.cloudera.sqoop.mapreduce.UpdateOutputFormat;
 
@@ -76,7 +79,9 @@ public class OracleUpsertOutputFormat<K extends SqoopRecord, V>
 
       StringBuilder sb = new StringBuilder();
       sb.append("MERGE INTO ");
-      sb.append(tableName);
+      // alpine hack start ***********************
+      sb.append(AlpineUtility.doubleQ(tableName));
+      // alpine hack end *************************
       sb.append(" USING dual ON ( ");
       first = true;
       for (int i = 0; i < updateCols.length; i++) {
@@ -85,7 +90,9 @@ public class OracleUpsertOutputFormat<K extends SqoopRecord, V>
         } else {
           sb.append(" AND ");
         }
-        sb.append(updateCols[i]).append(" = ?");
+        // alpine hack start ***********************
+        sb.append(AlpineUtility.doubleQ(updateCols[i])).append(" = ?");
+        // alpine hack end ***********************
       }
       sb.append(" )");
 
@@ -98,6 +105,9 @@ public class OracleUpsertOutputFormat<K extends SqoopRecord, V>
           } else {
             sb.append(", ");
           }
+          // alpine hack start ***********************
+          col = AlpineUtility.doubleQ(col);
+          // alpine hack end ***********************
           sb.append(col);
           sb.append(" = ?");
         }

@@ -27,12 +27,15 @@ import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
 import java.util.StringTokenizer;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.sqoop.manager.AlpineUtility;
+
 import com.cloudera.sqoop.lib.SqoopRecord;
 import com.cloudera.sqoop.mapreduce.AsyncSqlOutputFormat;
 import com.cloudera.sqoop.mapreduce.db.DBConfiguration;
@@ -183,14 +186,17 @@ public class UpdateOutputFormat<K extends SqoopRecord, V>
      */
     protected String getUpdateStatement() {
       StringBuilder sb = new StringBuilder();
-      sb.append("UPDATE " + this.tableName + " SET ");
-
+      // alpine hack start ***********************
+      sb.append("UPDATE " + AlpineUtility.doubleQ(this.tableName) + " SET ");
+      // alpine hack end ***********************
       boolean first = true;
       for (String col : this.columnNames) {
         if (!first) {
           sb.append(", ");
         }
-
+        // alpine hack start ***********************
+        col = AlpineUtility.doubleQ(col);
+        // alpine hack end ***********************
         sb.append(col);
         sb.append("=?");
         first = false;

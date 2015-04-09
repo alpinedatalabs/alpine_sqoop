@@ -38,6 +38,7 @@ import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.DBWritable;
 
 import com.cloudera.sqoop.config.ConfigurationHelper;
@@ -214,6 +215,9 @@ public class DataDrivenDBInputFormat<T extends DBWritable>
     StringBuilder query = new StringBuilder();
 
     String splitCol = getDBConf().getInputOrderBy();
+    // alpine hack start	****************************
+    splitCol = AlpineUtility.doubleQ(splitCol);
+    // alpine hack end		****************************
     query.append("SELECT MIN(").append(splitCol).append("), ");
     query.append("MAX(").append(splitCol).append(") FROM ");
     query.append(getDBConf().getInputTableName());

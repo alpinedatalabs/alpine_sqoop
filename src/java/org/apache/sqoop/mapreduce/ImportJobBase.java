@@ -37,8 +37,10 @@ import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.hcat.SqoopHCatUtilities;
 import org.apache.sqoop.util.PerfCounters;
+
 import com.cloudera.sqoop.SqoopOptions;
 import com.cloudera.sqoop.config.ConfigurationHelper;
 import com.cloudera.sqoop.io.CodecMap;
@@ -46,6 +48,7 @@ import com.cloudera.sqoop.manager.ImportJobContext;
 import com.cloudera.sqoop.mapreduce.JobBase;
 import com.cloudera.sqoop.orm.TableClassName;
 import com.cloudera.sqoop.util.ImportException;
+
 import org.apache.sqoop.validation.*;
 
 /**
@@ -228,6 +231,7 @@ public class ImportJobBase extends JobBase {
     loadJars(conf, ormJarFile, tableClassName);
 
     Job job = createJob(conf);
+    AlpineUtility.notifyJobStart(conf, job);
     try {
       // Set the external jar to use for the job.
       job.getConfiguration().set("mapred.jar", ormJarFile);

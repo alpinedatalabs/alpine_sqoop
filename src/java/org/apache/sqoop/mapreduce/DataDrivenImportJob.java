@@ -34,6 +34,7 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.lib.output.SequenceFileOutputFormat;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.hcat.SqoopHCatUtilities;
 
 import com.cloudera.sqoop.SqoopOptions;
@@ -173,14 +174,17 @@ public class DataDrivenImportJob extends ImportJobBase {
     String alias = "t1";
     int dot = col.lastIndexOf('.');
     String qualifiedName = (dot == -1) ? col : alias + col.substring(dot);
-
+    // alpine hack start	**********************************
+    qualifiedName = AlpineUtility.doubleQ(qualifiedName);
+    // alpine hack end		**********************************
+    
     ConnManager mgr = getContext().getConnManager();
     String ret = mgr.getInputBoundsQuery(qualifiedName, query);
     if (ret != null) {
       return ret;
     }
 
-    return "SELECT MIN(" + qualifiedName + "), MAX(" + qualifiedName + ") "
+   return "SELECT MIN(" + qualifiedName + "), MAX(" + qualifiedName + ") "
         + "FROM (" + query + ") AS " + alias;
   }
 

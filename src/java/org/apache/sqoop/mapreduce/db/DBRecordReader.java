@@ -31,11 +31,13 @@ import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.InputSplit;
 import org.apache.hadoop.mapreduce.RecordReader;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.DBWritable;
 import org.apache.hadoop.util.ReflectionUtils;
 
 import com.cloudera.sqoop.mapreduce.db.DBConfiguration;
 import com.cloudera.sqoop.mapreduce.db.DBInputFormat;
+
 import org.apache.sqoop.util.LoggingUtils;
 
 /**
@@ -120,15 +122,18 @@ public class DBRecordReader<T extends DBWritable> extends
     // Relies on LIMIT/OFFSET for splits.
     if (dbConf.getInputQuery() == null) {
       query.append("SELECT ");
-
+      
       for (int i = 0; i < fieldNames.length; i++) {
-        query.append(fieldNames[i]);
+    	//alpine hack start *******************************
+        query.append(AlpineUtility.doubleQ(fieldNames[i]));
+        //alpine hack end *********************************
         if (i != fieldNames.length -1) {
           query.append(", ");
         }
       }
-
-      query.append(" FROM ").append(tableName);
+      //alpine hack start *******************************
+      query.append(" FROM ").append(AlpineUtility.doubleQ(tableName));
+      //alpine hack end *******************************
       query.append(" AS ").append(tableName); //in hsqldb this is necessary
       if (conditions != null && conditions.length() > 0) {
         query.append(" WHERE (").append(conditions).append(")");

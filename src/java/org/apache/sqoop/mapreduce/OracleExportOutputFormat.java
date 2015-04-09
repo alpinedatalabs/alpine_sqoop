@@ -20,8 +20,11 @@ package org.apache.sqoop.mapreduce;
 
 import java.io.IOException;
 import java.sql.SQLException;
+
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.sqoop.manager.AlpineUtility;
+
 import com.cloudera.sqoop.lib.SqoopRecord;
 import com.cloudera.sqoop.mapreduce.ExportOutputFormat;
 
@@ -60,9 +63,9 @@ public class OracleExportOutputFormat<K extends SqoopRecord, V>
      */
     protected String getInsertStatement(int numRows) {
       StringBuilder sb = new StringBuilder();
-
-      sb.append("INSERT INTO " + getTableName() + " ");
-
+      // alpine hack start ****************************************************
+      sb.append("INSERT INTO  " + AlpineUtility.doubleQ( getTableName()) + "  ");
+      // alpine hack end ****************************************************
       int numSlots;
       String [] colNames = getColumnNames();
       if (colNames != null) {
@@ -74,7 +77,9 @@ public class OracleExportOutputFormat<K extends SqoopRecord, V>
           if (!first) {
             sb.append(", ");
           }
-
+          // alpine hack start ***********
+          col = AlpineUtility.doubleQ(col);
+          // alpine hack end *************
           sb.append(col);
           first = false;
         }

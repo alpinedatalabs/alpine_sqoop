@@ -25,6 +25,7 @@ import java.sql.SQLException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.DBWritable;
 
 import com.cloudera.sqoop.mapreduce.db.DBConfiguration;
@@ -60,7 +61,11 @@ extends DBRecordReader<T>  {
     String conditions = getConditions();
     String tableName = getTableName();
     String [] fieldNames = getFieldNames();
-
+    //Alpine hack start **************************************************
+    tableName = AlpineUtility.doubleQ(tableName); 
+    fieldNames = AlpineUtility.doubleQ(fieldNames);
+    //Alpine hack end   **************************************************
+    
     // Oracle-specific codepath to use rownum instead of LIMIT/OFFSET.
     if (dbConf.getInputQuery() == null) {
       query.append("SELECT ");

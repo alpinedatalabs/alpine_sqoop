@@ -30,6 +30,7 @@ import org.apache.hadoop.mapreduce.OutputCommitter;
 import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.DBWritable;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputCommitter;
 import org.apache.hadoop.mapreduce.lib.output.FileOutputFormat;
@@ -37,6 +38,7 @@ import org.apache.hadoop.util.StringUtils;
 
 import com.cloudera.sqoop.config.ConfigurationHelper;
 import com.cloudera.sqoop.mapreduce.db.DBConfiguration;
+
 import org.apache.sqoop.util.LoggingUtils;
 
 /**
@@ -76,12 +78,18 @@ public class DBOutputFormat<K extends DBWritable, V>
     }
 
     StringBuilder query = new StringBuilder();
+    //Alpine hack start **************************************************
+    table = AlpineUtility.doubleQ(table);
+    //Alpine hack end ****************************************************
     query.append("INSERT INTO ").append(table);
 
     if (fieldNames.length > 0 && fieldNames[0] != null) {
       query.append(" (");
       for (int i = 0; i < fieldNames.length; i++) {
-        query.append(fieldNames[i]);
+    	//Alpine hack start **************************************************
+    	String quoted = AlpineUtility.doubleQ(fieldNames[i]);
+    	//Alpine hack end ****************************************************
+        query.append(quoted);
         if (i != fieldNames.length - 1) {
           query.append(",");
         }

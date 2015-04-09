@@ -24,12 +24,15 @@ import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.List;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.mapreduce.JobContext;
 import org.apache.hadoop.mapreduce.RecordWriter;
 import org.apache.hadoop.mapreduce.TaskAttemptContext;
+import org.apache.sqoop.manager.AlpineUtility;
+
 import com.cloudera.sqoop.mapreduce.db.DBConfiguration;
 import com.cloudera.sqoop.mapreduce.AsyncSqlOutputFormat;
 import com.cloudera.sqoop.lib.SqoopRecord;
@@ -155,9 +158,9 @@ public class ExportOutputFormat<K extends SqoopRecord, V>
      */
     protected String getInsertStatement(int numRows) {
       StringBuilder sb = new StringBuilder();
-
-      sb.append("INSERT INTO " + tableName + " ");
-
+      // alpine hack start **************************************************
+      sb.append("INSERT INTO " + AlpineUtility.doubleQ(tableName) + " ");
+      // alpine hack end ****************************************************
       int numSlots;
       if (this.columnNames != null) {
         numSlots = this.columnNames.length;
@@ -168,7 +171,9 @@ public class ExportOutputFormat<K extends SqoopRecord, V>
           if (!first) {
             sb.append(", ");
           }
-
+          // alpine hack start ***********************
+          col = AlpineUtility.doubleQ(col);
+          // alpine hack end *************************
           sb.append(col);
           first = false;
         }

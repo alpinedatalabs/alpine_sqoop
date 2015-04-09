@@ -568,7 +568,10 @@ public abstract class ConnManager {
    * @return how the column name should be rendered in the sql text.
    */
   public String escapeColName(String colName) {
-    return colName;
+   /**Alpine change start **************************************************/
+   //return  colName ;
+   return AlpineUtility.doubleQ(colName);
+   /**Alpine change end **************************************************/
   }
 
   /**
@@ -580,7 +583,10 @@ public abstract class ConnManager {
    * @return how the table name should be rendered in the sql text.
    */
   public String escapeTableName(String tableName) {
-    return tableName;
+	  /**Alpine change start **************************************************/
+	  // return  tableName;
+	  return AlpineUtility.doubleQ( tableName);
+	  /**Alpine change end **************************************************/
   }
 
   /**

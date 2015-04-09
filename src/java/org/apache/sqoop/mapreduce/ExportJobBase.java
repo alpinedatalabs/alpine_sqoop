@@ -20,6 +20,8 @@ package org.apache.sqoop.mapreduce;
 
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.SQLException;
 
 import org.apache.commons.logging.Log;
@@ -36,9 +38,11 @@ import org.apache.hadoop.mapreduce.Job;
 import org.apache.hadoop.mapreduce.Mapper;
 import org.apache.hadoop.mapreduce.OutputFormat;
 import org.apache.hadoop.mapreduce.lib.input.FileInputFormat;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.hcat.SqoopHCatUtilities;
 import org.apache.sqoop.util.LoggingUtils;
 import org.apache.sqoop.util.PerfCounters;
+
 import com.cloudera.sqoop.SqoopOptions;
 import com.cloudera.sqoop.config.ConfigurationHelper;
 import com.cloudera.sqoop.lib.SqoopRecord;
@@ -47,6 +51,7 @@ import com.cloudera.sqoop.manager.ExportJobContext;
 import com.cloudera.sqoop.orm.TableClassName;
 import com.cloudera.sqoop.mapreduce.JobBase;
 import com.cloudera.sqoop.util.ExportException;
+
 import org.apache.sqoop.validation.*;
 
 /**
@@ -379,7 +384,14 @@ public class ExportJobBase extends JobBase {
       }
     }
 
+    
+    
     Job job = createJob(conf);
+    
+    // alpine hack start *******************
+    AlpineUtility.notifyJobStart(conf, job);
+    // alpine hack end *********************
+    
     try {
       // Set the external jar to use for the job.
       job.getConfiguration().set("mapred.jar", ormJarFile);

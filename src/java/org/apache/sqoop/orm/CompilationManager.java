@@ -52,6 +52,9 @@ import com.cloudera.sqoop.util.Jars;
  * jar to ensure that the job runs correctly.
  */
 public class CompilationManager {
+  /**Alpine change start **************************************************/
+  public static String classpathWithHadoop = "";
+  /**Alpine change end **************************************************/
 
   /** If we cannot infer a jar name from a table name, etc., use this. */
   public static final String DEFAULT_CODEGEN_JAR_NAME =
@@ -166,10 +169,21 @@ public class CompilationManager {
       LOG.warn("Could not find sqoop jar; child compilation may fail");
       sqoopJar = "";
     }
+    /**Alpine change start **************************************************/
+    //Alpine, we hack this for our hadoop agent
+    //String curClasspath =System.getProperty("java.class.path");
+    String curClasspath = classpathWithHadoop;
 
-    String curClasspath = System.getProperty("java.class.path");
+    //for 80389156 *********************************************************
+    args.add("-source");
+    args.add("1.6");
+
+    args.add("-target");
+    args.add("1.6");
+    //for 80389156  end ************************************************
+    /**Alpine change end **************************************************/
+
     LOG.debug("Current sqoop classpath = " + curClasspath);
-
     args.add("-sourcepath");
     args.add(jarOutDir);
 

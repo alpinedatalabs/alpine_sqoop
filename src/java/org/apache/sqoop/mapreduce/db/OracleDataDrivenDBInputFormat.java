@@ -25,6 +25,7 @@ import org.apache.hadoop.conf.Configurable;
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.io.LongWritable;
 import org.apache.hadoop.mapreduce.RecordReader;
+import org.apache.sqoop.manager.AlpineUtility;
 import org.apache.sqoop.mapreduce.DBWritable;
 
 import com.cloudera.sqoop.mapreduce.db.DBConfiguration;
@@ -66,10 +67,17 @@ public class OracleDataDrivenDBInputFormat<T extends DBWritable>
     Class<T> inputClass = (Class<T>) (dbConf.getInputClass());
 
     try {
+      // Alpine hack start ************************************************
+      String tableName = dbConf.getInputTableName();
+	  String[] fieldNames = dbConf.getInputFieldNames();
+		
+	  tableName = AlpineUtility.doubleQ(tableName);
+	  fieldNames = AlpineUtility.doubleQ(fieldNames);
+	  // Alpine hack end **************************************************
       // Use Oracle-specific db reader
       return new OracleDataDrivenDBRecordReader<T>(split, inputClass,
           conf, getConnection(), dbConf, dbConf.getInputConditions(),
-          dbConf.getInputFieldNames(), dbConf.getInputTableName());
+          fieldNames, tableName);
     } catch (SQLException ex) {
       throw new IOException(ex);
     }

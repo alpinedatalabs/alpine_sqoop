@@ -31,15 +31,16 @@ import java.util.Map;
 import com.cloudera.sqoop.mapreduce.MergeJob;
 import com.cloudera.sqoop.orm.TableClassName;
 import com.cloudera.sqoop.util.ClassLoaderStack;
+
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
-
 import org.apache.hadoop.conf.Configuration;
 import org.apache.hadoop.util.StringUtils;
+import org.apache.sqoop.manager.AlpineUtility;
 
 import com.cloudera.sqoop.Sqoop;
 import com.cloudera.sqoop.SqoopOptions;
@@ -873,7 +874,9 @@ public class ImportTool extends com.cloudera.sqoop.tool.BaseSqoopTool {
         }
 
         if (in.hasOption(SPLIT_BY_ARG)) {
-          out.setSplitByCol(in.getOptionValue(SPLIT_BY_ARG));
+          //alpine hack start *****************************************************
+          out.setSplitByCol(AlpineUtility.doubleQ(in.getOptionValue(SPLIT_BY_ARG)));
+          //alpine hack end   *****************************************************
         }
 
         if (in.hasOption(WHERE_ARG)) {
