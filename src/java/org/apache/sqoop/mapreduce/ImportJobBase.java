@@ -231,7 +231,9 @@ public class ImportJobBase extends JobBase {
     loadJars(conf, ormJarFile, tableClassName);
 
     Job job = createJob(conf);
+    // alpine hack start *******************
     AlpineUtility.notifyJobStart(conf, job);
+    // alpine hack end *********************
     try {
       // Set the external jar to use for the job.
       job.getConfiguration().set("mapred.jar", ormJarFile);
